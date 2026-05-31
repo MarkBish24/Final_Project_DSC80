@@ -213,6 +213,29 @@
             <div class="plot-container">
                 <iframe src="assets/step_4_graph_2.html"></iframe>
             </div>
+
+            <h3>Temporal and Environmental Trends</h3>
+            <p>The frequency and duration of outages have shown non-linear trends over the last decade. Analyzing outages by year reveals certain periods of high grid volatility.</p>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_2_graph_1.html"></iframe>
+            </div>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_2_graph_2.html"></iframe>
+            </div>
+
+            <p>Extreme weather and equipment failure remain the primary drivers of major outages. The chart below breaks down the primary causes across the dataset.</p>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_2_graph_3.html"></iframe>
+            </div>
+
+            <p>Finally, we examined how urbanization correlates with outage duration, finding that while urban centers have better infrastructure, they also face more complex recovery challenges.</p>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_2_graph_4.html"></iframe>
+            </div>
         </div>
     </section>
 
@@ -225,6 +248,27 @@
                 <li><strong>MAR Discovery:</strong> We found that <code>Demand_Loss_MW</code> missingness is significantly correlated with the <code>Year</code>. This implies that reporting standards for precise megawatt loss improved over time, suggesting the data is Missing at Random based on the date.</li>
                 <li><strong>MAR Discovery:</strong> <code>Customers_Affected</code> missingness was found to be dependent on the <code>State</code>, likely due to varying utility reporting requirements between different state legislatures.</li>
             </ul>
+
+            <h3>Missingness Permutation Tests</h3>
+            <p>To validate our MAR assumptions, we performed permutation tests on the distributions of observed versus missing data across temporal and geographical variables.</p>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_3_graph_1.html"></iframe>
+            </div>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_3_graph_2.html"></iframe>
+            </div>
+
+            <p>The geographical dependency of <code>Customers_Affected</code> is highlighted by the disparity in missingness reporting across different regions.</p>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_3_graph_3.html"></iframe>
+            </div>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_3_graph_4.html"></iframe>
+            </div>
         </div>
     </section>
 
@@ -241,6 +285,10 @@
                 </div>
             </div>
             <p><strong>Conclusion:</strong> With a p-value of 0.015, we reject the null hypothesis at the 5% level. There is strong evidence that regional infrastructure and local climate conditions create state-specific "outage signatures."</p>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_4_graph_1.html"></iframe>
+            </div>
         </div>
     </section>
 
@@ -306,6 +354,10 @@
                 </div>
             </div>
             <p><strong>Conclusion:</strong> We fail to reject the null hypothesis. The model appears fair and maintains consistent accuracy regardless of the severity of the climate anomaly.</p>
+            
+            <div class="plot-container">
+                <iframe src="assets/step_8_graph_1.html"></iframe>
+            </div>
         </div>
     </section>
 
