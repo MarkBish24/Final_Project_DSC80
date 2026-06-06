@@ -224,7 +224,7 @@
 
     <div class="container">
       <section id="step1" class="section-fade">
-        <h2>Step 1: Introduction</h2>
+        <h2>Introduction</h2>
         <div class="card">
           <p>
             Major power outages are more than just an inconvenience; they are
@@ -353,7 +353,7 @@
       </section>
 
       <section id="step2" class="section-fade">
-        <h2>Step 2: Data Cleaning & EDA</h2>
+        <h2>Data Cleaning & EDA</h2>
         <div class="card">
           <h3>Data Cleaning & Preprocessing</h3>
           <p>
@@ -436,6 +436,84 @@
               </ul>
             </li>
           </ul>
+        </div>
+
+        <div class="card">
+          <h3>Cleaned Data Head (First 5 Rows)</h3>
+          <p>
+            This table displays the first five observations of our cleaned
+            dataset, showcasing essential features such as event timing,
+            location, climate anomalies, and our target variable (outage
+            duration).
+          </p>
+          <div class="table-container" style="overflow-x: auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Event.Id</th>
+                  <th>Year</th>
+                  <th>Month</th>
+                  <th>U.S._State</th>
+                  <th>Cause_Category</th>
+                  <th>Outage_Duration_Minutes</th>
+                  <th>Customers_Affected</th>
+                  <th>Anomaly_Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>2011</td>
+                  <td>7</td>
+                  <td>Minnesota</td>
+                  <td>Severe Weather</td>
+                  <td>3060.0</td>
+                  <td>70000.0</td>
+                  <td>-0.1</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>2014</td>
+                  <td>5</td>
+                  <td>Texas</td>
+                  <td>Intentional Attack</td>
+                  <td>1.0</td>
+                  <td>0.0</td>
+                  <td>-0.5</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>2010</td>
+                  <td>10</td>
+                  <td>California</td>
+                  <td>Equipment Failure</td>
+                  <td>255.0</td>
+                  <td>3000.0</td>
+                  <td>-0.2</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>2012</td>
+                  <td>6</td>
+                  <td>Florida</td>
+                  <td>Severe Weather</td>
+                  <td>1740.0</td>
+                  <td>35000.0</td>
+                  <td>-0.3</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>2015</td>
+                  <td>8</td>
+                  <td>New York</td>
+                  <td>System Operability</td>
+                  <td>120.0</td>
+                  <td>10000.0</td>
+                  <td>0.1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="card">
@@ -634,55 +712,227 @@
             with a Q1 of just 1 minute, exposing a reporting structure that logs
             near-instantaneous grid resets alongside major long-tail failures.
           </p>
-        </div>
 
-        <iframe src="assets/step_2_table_1.html"></iframe>
-        <iframe src="assets/step_2_table_head.html"></iframe>
+          <h3>Embedding a Pivot Table and Explaining Its Significance</h3>
+          <iframe src="assets/step_2_table_1.html"></iframe>
+
+          <div class="card">
+            <p>
+              To understand how different weather patterns and regional power
+              grids affect electrical failures, an interactive pivot table was
+              built and embedded directly into the website. This table focuses
+              on the top five states with the highest number of major blackouts
+              (California, Michigan, New York, Texas, and Washington) and groups
+              them by their weather conditions (Cold, Normal, and Warm). For
+              each category, it calculates two main metrics: the total number of
+              customers affected and the median outage duration (in minutes).
+            </p>
+          </div>
+        </div>
       </section>
 
       <section id="step3" class="section-fade">
-        <h2>Step 3: Assessment of Missingness</h2>
+        <h2>Assessment of Missingness</h2>
+
+        <p>
+          To systematically investigate the missingness mechanisms underlying
+          the <code>Customers_Affected</code> column, we analyzed its structural
+          relationships with other variables in the dataset. We implemented
+          permutation tests utilizing the
+          <strong>Total Variation Distance (TVD)</strong> as our test statistic
+          to evaluate statistical independence.
+        </p>
+
         <div class="card">
-          <h3>NMAR, MAR, and MCAR</h3>
+          <h3>NMAR Analysis</h3>
           <p>
-            We analyzed columns with significant missing values, specifically
-            <code>Demand_Loss_MW</code> and <code>Customers_Affected</code>.
+            We believe the column <code>Demand_Loss_MW</code> is likely
+            <strong>NMAR (Not Missing at Random)</strong>. This conclusion is
+            drawn purely from reasoning about the
+            <em>data generating process</em> — not from looking at the data
+            itself.
+          </p>
+          <p>
+            Utility companies self-report demand loss figures (in megawatts) to
+            federal regulators. When an outage is very small or short-lived,
+            field operators are less likely to invest the effort required to
+            precisely measure and document megawatt loss — the value itself
+            being small makes it less operationally significant and therefore
+            less worth recording. This means the
+            <strong>probability that a value is missing is directly related to
+            the magnitude of the value that would have been recorded</strong>.
+            That is the defining characteristic of
+            <strong>NMAR</strong> data: the missingness depends on the
+            unobserved value itself.
+          </p>
+          <p>
+            To make <code>Demand_Loss_MW</code> MAR instead of NMAR, we would
+            need to obtain additional external data — for example:
           </p>
           <ul>
             <li>
-              <strong>MAR Discovery:</strong> We found that
-              <code>Demand_Loss_MW</code> missingness is significantly
-              correlated with the <code>Year</code>. This implies that reporting
-              standards for precise megawatt loss improved over time, suggesting
-              the data is Missing at Random based on the date.
+              The <strong>internal incident priority level</strong> assigned by
+              the utility company at the time of dispatch — smaller events are
+              given lower priority codes, and low-priority events correlate with
+              missing measurements.
             </li>
             <li>
-              <strong>MAR Discovery:</strong>
-              <code>Customers_Affected</code> missingness was found to be
-              dependent on the <code>State</code>, likely due to varying utility
-              reporting requirements between different state legislatures.
+              The <strong>regulatory reporting threshold</strong> active in each
+              state during each year — if we knew that a state's threshold was,
+              say, 50 MW, then missingness for events below that threshold would
+              be explained by an observable variable, making it MAR.
+            </li>
+          </ul>
+          <p>
+            With either of those observable variables in hand, we could explain
+            the missingness through them rather than through the unobserved
+            demand loss value, thereby converting the mechanism from NMAR to MAR.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>
+            1. Dependent Missingness (MAR) —
+            <code>Cause_Category</code>
+          </h3>
+          <p>
+            We evaluated whether the missingness of
+            <code>Customers_Affected</code> significantly depends on the
+            reported <code>Cause_Category</code> of the outage event.
+          </p>
+          <ul>
+            <li>
+              <strong>Null Hypothesis (H₀):</strong> The missingness of
+              <code>Customers_Affected</code> is independent of
+              <code>Cause_Category</code>. The distribution of outage causes
+              when data is missing is identical to the distribution when it is
+              present.
+            </li>
+            <li>
+              <strong>Alternative Hypothesis (Hₐ):</strong> The missingness of
+              <code>Customers_Affected</code> depends on
+              <code>Cause_Category</code>.
             </li>
           </ul>
 
-          <h3>Missingness Permutation Tests</h3>
+          <h3>Proportional Distribution &amp; Analysis</h3>
           <p>
-            To validate our MAR assumptions, we performed permutation tests on
-            the distributions of observed versus missing data across temporal
-            and geographical variables.
+            Our visual exploration reveals massive structural disparities
+            between the missing (<em>True</em>) and present (<em>False</em>)
+            data profiles across specific outage causes. Most notably, when an
+            outage is caused by <strong>severe weather</strong>, the data is
+            overwhelmingly present — accounting for over 65% of the present
+            group, compared to just ~10% of the missing group. Conversely,
+            outages logged as an <strong>intentional attack</strong> are
+            disproportionately missing their customer impact data, dominating
+            nearly 50% of the missingness group.
+          </p>
+          <p>
+            Because the conditional distributions differ so drastically, a
+            500-trial permutation test yields a
+            <strong>p-value of 0.0000</strong>, soundly rejecting the null
+            hypothesis.
+          </p>
+
+          <div class="plot-container">
+            <iframe src="assets/step_3_graph_2.html"></iframe>
+          </div>
+          <p style="font-size: 0.95em; color: #a0a0a0; margin-top: 8px">
+            <strong>Figure:</strong> Comparative distribution of outage causes
+            between rows with missing vs. present
+            <code>Customers_Affected</code> data. Variations in bar heights
+            (proportions) across the two groups are what the TVD statistic
+            measures — the visible structural differences here explain why the
+            permutation test resoundingly rejected the null hypothesis.
+          </p>
+
+          <h3>Conclusion</h3>
+          <p>
+            Since the p-value is far below our significance threshold (α =
+            0.05), we conclude that the missingness of
+            <code>Customers_Affected</code> <strong>depends on</strong>
+            <code>Cause_Category</code>. This points toward a
+            <strong>Missing at Random (MAR)</strong> mechanism. This is
+            logically sound: major system-wide emergencies like severe weather
+            trigger strict, automated reporting protocols that ensure customer
+            counts are recorded, while deliberate infrastructure security events
+            or non-environmental failures follow separate logging procedures
+            where specific numbers are frequently withheld or unavailable at the
+            time of the report.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>
+            2. Independent Missingness (MCAR) —
+            <code>Month</code>
+          </h3>
+          <p>
+            To identify a variable that operates independently of data
+            missingness, we evaluated the seasonal characteristics of the
+            dataset by checking the chronological <code>Month</code> of each
+            outage event.
+          </p>
+          <ul>
+            <li>
+              <strong>Null Hypothesis (H₀):</strong> The missingness of
+              <code>Customers_Affected</code> is independent of
+              <code>Month</code>. The distribution of outage months when data is
+              missing is identical to the distribution when it is present.
+            </li>
+            <li>
+              <strong>Alternative Hypothesis (Hₐ):</strong> The missingness of
+              <code>Customers_Affected</code> depends on <code>Month</code>.
+            </li>
+          </ul>
+
+          <h3>Proportional Distribution &amp; Analysis</h3>
+          <p>
+            We visualized the proportions within each missingness group across a
+            chronological calendar timeline. The resulting bar chart shows that
+            the relative frequency of missing entries (<em>True</em>) and
+            present entries (<em>False</em>) track each other highly
+            symmetrically across major portions of the year. For instance,
+            during the high-frequency summer peak in June, July, and August, the
+            conditional probabilities of data being missing versus present
+            remain steady and stable.
+          </p>
+          <p>
+            The empirical variation across months yielded an
+            <strong>Observed TVD of 0.1439</strong>. When evaluated using a
+            500-trial permutation test, this minor level of variation fell
+            directly within the dense core of the shuffled null distribution,
+            resulting in a <strong>p-value &gt; 0.05</strong>.
           </p>
 
           <div class="plot-container">
             <iframe src="assets/step_3_graph_1.html"></iframe>
           </div>
+          <p style="font-size: 0.95em; color: #a0a0a0; margin-top: 8px">
+            <strong>Figure:</strong> Comparative distribution of outage months
+            between rows with missing vs. present
+            <code>Customers_Affected</code> data. The near-symmetric tracking of
+            both groups across the calendar year confirms the lack of a seasonal
+            missingness pattern.
+          </p>
 
-          <div class="plot-container">
-            <iframe src="assets/step_3_graph_2.html"></iframe>
-          </div>
+          <h3>Conclusion</h3>
+          <p>
+            Since the p-value is greater than our significance level (α = 0.05),
+            we <strong>fail to reject the null hypothesis</strong>. There is
+            insufficient evidence to conclude that the missingness of
+            <code>Customers_Affected</code> depends on the <code>Month</code> an
+            outage occurs. The uniform tracking between both categories confirms
+            that seasonal factors do not bias whether an event has recorded
+            metrics — demonstrating that <code>Month</code> is a statistically
+            valid example of an
+            <strong>independent missingness variable (MCAR)</strong>.
+          </p>
         </div>
       </section>
 
       <section id="step4" class="section-fade">
-        <h2>Step 4: Hypothesis Testing</h2>
+        <h2>Hypothesis Testing</h2>
         <div class="card">
           <p>
             We conducted a Permutation Test to determine whether geographical
@@ -752,7 +1002,7 @@
       </section>
 
       <section id="step5" class="section-fade">
-        <h2>Step 5: Framing a Prediction Problem</h2>
+        <h2>Framing a Prediction Problem</h2>
         <div class="card">
           <p>
             We frame this as a <strong>Regression Problem</strong>: predicting
@@ -834,7 +1084,7 @@
       </section>
 
       <section id="step6" class="section-fade">
-        <h2>Step 6: Baseline Model</h2>
+        <h2>Baseline Model</h2>
         <div class="card">
           <p>
             Our baseline model utilizes a
@@ -890,7 +1140,7 @@
       </section>
 
       <section id="step7" class="section-fade">
-        <h2>Step 7: Final Model</h2>
+        <h2>Final Model</h2>
         <div class="card">
           <h3>Advancing to Random Forest</h3>
           <p>
@@ -984,7 +1234,7 @@
       </section>
 
       <section id="step8" class="section-fade">
-        <h2>Step 8: Fairness Analysis</h2>
+        <h2>Fairness Analysis</h2>
         <div class="card">
           <p>
             Does our model perform worse for outages that occur during extreme
