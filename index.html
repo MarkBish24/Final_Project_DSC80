@@ -1,370 +1,1071 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Power Grid Reliability & Prediction Analysis</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --bg-dark: #0a0b10;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --accent-primary: #636efa;
-            --accent-secondary: #00cc96;
-            --text-main: #e0e6ed;
-            --text-muted: #94a3b8;
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
+      :root {
+        --bg-dark: #0a0b10;
+        --card-bg: rgba(255, 255, 255, 0.03);
+        --accent-primary: #636efa;
+        --accent-secondary: #00cc96;
+        --text-main: #e0e6ed;
+        --text-muted: #94a3b8;
+        --glass-border: rgba(255, 255, 255, 0.1);
+      }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family: "Outfit", sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
 
-        header {
-            text-align: center;
-            padding: 80px 0 40px;
-            background: radial-gradient(circle at 50% 50%, rgba(99, 110, 250, 0.1) 0%, transparent 70%);
-        }
+      header {
+        text-align: center;
+        padding: 80px 0 40px;
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(99, 110, 250, 0.1) 0%,
+          transparent 70%
+        );
+      }
 
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin: 0;
-            background: linear-gradient(135deg, #fff 0%, #636efa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, #fff 0%, #636efa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -1px;
+      }
 
-        h2 {
-            font-size: 1.8rem;
-            color: var(--accent-primary);
-            margin-top: 60px;
-            border-left: 4px solid var(--accent-primary);
-            padding-left: 15px;
-        }
+      h2 {
+        font-size: 1.8rem;
+        color: var(--accent-primary);
+        margin-top: 60px;
+        border-left: 4px solid var(--accent-primary);
+        padding-left: 15px;
+      }
 
-        h3 {
-            font-size: 1.3rem;
-            color: var(--accent-secondary);
-            margin-top: 30px;
-        }
+      h3 {
+        font-size: 1.3rem;
+        color: var(--accent-secondary);
+        margin-top: 30px;
+      }
 
-        p, li {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
+      p,
+      li {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+      }
 
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 20px 0;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
+      .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 30px;
+        margin: 20px 0;
+        transition:
+          transform 0.3s ease,
+          border-color 0.3s ease;
+      }
 
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(99, 110, 250, 0.3);
-        }
+      .card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(99, 110, 250, 0.3);
+      }
 
-        .plot-container {
-            width: 100%;
-            height: 600px;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            margin: 30px 0;
-            background: #111;
-        }
+      .plot-container {
+        width: 100%;
+        height: 600px;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+        margin: 30px 0;
+        background: #111;
+      }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
 
-        .stat-item {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-        }
+      .stat-item {
+        text-align: center;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+      }
 
-        .stat-value {
-            display: block;
-            font-size: 2rem;
-            font-weight: 800;
-            color: #fff;
-        }
+      .stat-value {
+        display: block;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+      }
 
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+      .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
 
-        code {
-            font-family: 'JetBrains Mono', monospace;
-            background: rgba(255,255,255,0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.95em;
-        }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.95em;
+      }
 
-        footer {
-            text-align: center;
-            padding: 60px 0;
-            opacity: 0.5;
-            font-size: 0.9rem;
-        }
+      footer {
+        text-align: center;
+        padding: 60px 0;
+        opacity: 0.5;
+        font-size: 0.9rem;
+      }
 
-        /* Micro-animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+      /* Micro-animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-        .section-fade {
-            animation: fadeIn 0.8s ease forwards;
-        }
+      .section-fade {
+        animation: fadeIn 0.8s ease forwards;
+      }
+
+      /* Table Styling */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.95rem;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+      }
+
+      .data-table th {
+        background: rgba(99, 110, 250, 0.2);
+        color: #fff;
+        text-align: left;
+        padding: 15px;
+        font-weight: 600;
+      }
+
+      .data-table td {
+        padding: 15px;
+        border-bottom: 1px solid var(--glass-border);
+        color: var(--text-muted);
+      }
+
+      .data-table tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .highlight-text {
+        color: var(--accent-primary);
+        font-weight: 600;
+      }
     </style>
-</head>
-<body>
-
-<header>
-    <div class="container section-fade">
+  </head>
+  <body>
+    <header>
+      <div class="container section-fade">
         <h1>US Power Grid Resilience</h1>
-        <p style="color: var(--accent-primary); font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">A Deep Dive into Major Power Outages (2000–2016)</p>
-    </div>
-</header>
+        <p
+          style="
+            color: var(--accent-primary);
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+          "
+        >
+          A Deep Dive into Major Power Outages (2000–2016)
+        </p>
+      </div>
+    </header>
 
-<div class="container">
-    
-    <section id="step1" class="section-fade">
+    <div class="container">
+      <section id="step1" class="section-fade">
         <h2>Step 1: Introduction</h2>
         <div class="card">
-            <p>This project investigates the historical patterns and predictive possibilities of major power outages in the United States. Utilizing a comprehensive dataset of outages recorded between January 2000 and July 2016, we analyze how geographical, environmental, and infrastructural factors correlate with grid failure severity.</p>
-            <p><strong>The Core Objective:</strong> Can we predict the duration of an outage as soon as it begins, allowing for better emergency resource allocation and public safety warnings?</p>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-value">1,534</span>
-                    <span class="stat-label">Observations</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">57</span>
-                    <span class="stat-label">Variables</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">16 Years</span>
-                    <span class="stat-label">Time Span</span>
-                </div>
-            </div>
-        </div>
-    </section>
+          <p>
+            Major power outages are more than just an inconvenience; they are
+            critical events that impact public safety and economic stability.
+            This project investigates a historical record of major power outages
+            in the United States to uncover patterns of risk.
+          </p>
 
-    <section id="step2" class="section-fade">
+          <p>
+            <span class="highlight-text">The Central Research Question:</span>
+            Can we accurately predict the
+            <span class="highlight-text">Duration of a Power Outage</span> using
+            regional climate data, infrastructure metrics, and the timing of the
+            event?
+          </p>
+
+          <p>
+            Understanding the expected duration of an outage at its onset allows
+            utility companies and emergency services to coordinate repairs and
+            communicate with the public with greater precision. For residents,
+            it means the difference between waiting out a storm and needing
+            immediate relocation for safety.
+          </p>
+
+          <h3>Dataset Overview</h3>
+          <p>
+            The dataset analyzed here contains
+            <span class="highlight-text">1,534 major outage events</span>
+            recorded across the United States between January 2000 and July
+            2016. Each observation includes geographical details, climate
+            anomalies, and local electricity consumption metrics.
+          </p>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Outage_Duration_Minutes</code></td>
+                <td>
+                  The total time elapsed (in minutes) from the reported start of
+                  the outage event until power was restored to all affected
+                  customers.
+                </td>
+              </tr>
+              <tr>
+                <td><code>Customers_Affected</code></td>
+                <td>
+                  The reported number of customers who lost power during the
+                  major outage event.
+                </td>
+              </tr>
+              <tr>
+                <td><code>Anomaly_Level</code></td>
+                <td>
+                  Oceanic Niño Index (ONI) estimated as a 3-month running mean
+                  of ERSST.v4 SST anomalies in the Niño 3.4 region (5°N to 5°S,
+                  120–170°W).
+                </td>
+              </tr>
+              <tr>
+                <td><code>Total_Sales</code></td>
+                <td>
+                  Total electricity consumption in the specific U.S. State
+                  (measured in megawatt-hours).
+                </td>
+              </tr>
+              <tr>
+                <td><code>Climate_Region</code></td>
+                <td>
+                  Classification of the continental U.S. into nine climatically
+                  consistent regions as specified by the National Centers for
+                  Environmental Information.
+                </td>
+              </tr>
+              <tr>
+                <td><code>Climate_Category</code></td>
+                <td>
+                  Climate episodes ("Warm", "Cold", or "Normal") defined by a
+                  threshold of ± 0.5 °C for the Oceanic Niño Index (ONI).
+                </td>
+              </tr>
+              <tr>
+                <td><code>Percent_Urban_Population</code></td>
+                <td>
+                  Percentage of the total state population represented by the
+                  urban population (measured in %).
+                </td>
+              </tr>
+              <tr>
+                <td><code>U.S._State</code></td>
+                <td>
+                  The geographical state in the continental U.S. where the
+                  outage event was localized.
+                </td>
+              </tr>
+              <tr>
+                <td><code>Season</code></td>
+                <td>
+                  An engineered feature grouping the outage start into
+                  meteorological seasonal clusters based on the reporting month.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value">1,534</span>
+              <span class="stat-label">Observations</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">57</span>
+              <span class="stat-label">Variables</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">16 Years</span>
+              <span class="stat-label">Time Span</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="step2" class="section-fade">
         <h2>Step 2: Data Cleaning & EDA</h2>
         <div class="card">
-            <h3>Cleaning Methodology</h3>
-            <ul>
-                <li><strong>Header Normalization:</strong> Removed bureaucratic metadata rows to isolate raw data fields.</li>
-                <li><strong>Temporal Synthesis:</strong> Combined disparate Year, Month, Day, and Time columns into unified <code>OUTAGE.START</code> and <code>OUTAGE.RESTORATION</code> datetime objects.</li>
-                <li><strong>Metric Conversion:</strong> Standardized total outage length into <code>Outage_Duration_Minutes</code> for high-precision regression.</li>
-                <li><strong>Validation:</strong> Enforced chronological consistency (restoration must occur after start).</li>
-            </ul>
+          <h3>Data Cleaning & Preprocessing</h3>
+          <p>
+            The raw dataset comes from official regulatory incident reports
+            filed by utility companies. Because these forms are collected across
+            different states and power companies, the raw data is quite messy
+            and full of inconsistencies. To turn it into clean, model-ready
+            data, we built a preprocessing pipeline with the following steps:
+          </p>
+
+          <ul>
+            <li>
+              <strong>Cleaning Up the Headers:</strong> The original spreadsheet
+              came with several rows of government metadata and titles at the
+              very top. We stripped these out to isolate the actual data fields
+              and renamed the titles in a way to make it easier to understand.
+            </li>
+            <li>
+              <strong>Combining Date and Time Pieces:</strong> The dataset
+              originally split timestamps across separate columns for the Year,
+              Month, Day, and specific times. We stitched these pieces back
+              together to create two unified, high-precision datetime columns:
+              <code>OUTAGE.START</code> and <code>OUTAGE.RESTORATION</code>.
+            </li>
+            <li>
+              <strong>Calculating Outage Durations:</strong> Using our newly
+              combined timestamps, we calculated the exact number of minutes
+              between when an outage started and when it ended, creating our
+              main target variable: <code>Outage_Duration_Minutes</code>.
+              Standardizing this into minutes gives us a precise, continuous
+              number that is perfect for running regression models.
+            </li>
+            <li>
+              <strong>Filtering Out Chronological Errors:</strong> Real-world
+              data entry forms are prone to human error. We ran a validation
+              check to make sure that a power grid's restoration time didn't
+              accidentally happen *before* its start time. Any glitchy rows with
+              negative durations or impossible timelines were filtered out to
+              ensure our model isn't learning from bad data.
+            </li>
+            <li>
+              <strong>Handling Missing Data (NaNs):</strong> To ensure a robust
+              dataset for modeling, we implemented a structured imputation
+              strategy:
+              <ul>
+                <li>
+                  <strong>Dropping Irrelevant Features:</strong> We dropped
+                  <code>Hurricane_Names</code> as the missingness was "by
+                  design" (only relevant for a small subset of events).
+                </li>
+                <li>
+                  <strong>Indicator Variables:</strong> Created binary tags
+                  (<code>_missing</code>) for
+                  <code>Customers_Affected</code> and
+                  <code>Demand_Loss_MW</code> to preserve the signal that a
+                  value was originally absent before imputation.
+                </li>
+                <li>
+                  <strong>Median Imputation:</strong> For major numerical
+                  columns including <code>Customers_Affected</code>,
+                  <code>Demand_Loss_MW</code>, and electricity price/sales
+                  metrics, we filled missing values with the
+                  <strong>median</strong> to maintain central tendency without
+                  being skewed by outliers.
+                </li>
+                <li>
+                  <strong>Categorical "Unknown" Labels:</strong> For
+                  <code>Cause_Category_Detail</code>,
+                  <code>Climate_Category</code>, and
+                  <code>Climate_Region</code>, we replaced NaNs with an
+                  "Unknown" category to maintain the data's multi-class
+                  structure.
+                </li>
+                <li>
+                  <strong>Listwise Deletion for Target:</strong> We converted
+                  <code>Outage_Duration_Minutes</code> to numeric and dropped
+                  rows where this value remained missing, as we cannot train or
+                  validate a regression model on unknown targets.
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
 
         <div class="card">
-            <h3>Mapping the Outage Landscape</h3>
-            <p>Our initial exploration revealed significant regional disparities. California leads the nation in total outage count, likely due to a combination of dense population and environmental risks (wildfires/wind).</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_4_graph_3.html"></iframe>
-            </div>
-            
-            <p>However, when looking at <em>average</em> duration, the story shifts. While California has the most outages, states like New York and Texas frequently face longer recovery times per event.</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_4_graph_2.html"></iframe>
-            </div>
+          <h3>Mapping the Outage Landscape</h3>
+          <p>
+            Our initial exploration revealed significant regional disparities.
+            California leads the nation in total outage count, likely due to a
+            combination of dense population and environmental risks
+            (wildfires/wind).
+          </p>
 
-            <h3>Temporal and Environmental Trends</h3>
-            <p>The frequency and duration of outages have shown non-linear trends over the last decade. Analyzing outages by year reveals certain periods of high grid volatility.</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_2_graph_1.html"></iframe>
-            </div>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_2_graph_2.html"></iframe>
-            </div>
+          <div class="plot-container">
+            <iframe src="assets/step_4_graph_3.html"></iframe>
+          </div>
 
-            <p>Extreme weather and equipment failure remain the primary drivers of major outages. The chart below breaks down the primary causes across the dataset.</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_2_graph_3.html"></iframe>
-            </div>
+          <p>
+            However, when looking at <em>average</em> duration, the story
+            shifts. While California has the most outages, states like Wisconsin
+            and West Virginia frequently face longer recovery times per event.
+          </p>
 
-            <p>Finally, we examined how urbanization correlates with outage duration, finding that while urban centers have better infrastructure, they also face more complex recovery challenges.</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_2_graph_4.html"></iframe>
-            </div>
+          <div class="plot-container">
+            <iframe src="assets/step_4_graph_2.html"></iframe>
+          </div>
+
+          <h3>Univariate Analysis: Outage Scale and Severity</h3>
+          <p>
+            To establish a baseline understanding of grid failures, we analyzed
+            the distributions of outage durations and customer impact as
+            isolated metrics. Both features exhibit extreme right-skewness,
+            reflecting a data-generating process where routine failures are
+            handled rapidly, but rare environmental shocks paralyze the grid on
+            a massive scale.
+          </p>
+
+          <div class="plot-container">
+            <iframe src="assets/step_2_graph_1.html"></iframe>
+            <p
+              class="plot-description"
+              style="margin-top: 10px; font-size: 0.95em; color: #a0a0a0"
+            >
+              <strong>Figure 1: Distribution of Outage Durations.</strong> This
+              histogram demonstrates a severe right-skewed distribution of
+              outage lengths, requiring a logarithmic y-axis scale to isolate
+              low-frequency, high-severity events. While the overwhelming
+              majority of grid anomalies are resolved within a few thousand
+              minutes, a thin, persistent tail extends out past 40,000 minutes,
+              marking long-duration infrastructure gridlocks.
+            </p>
+          </div>
+
+          <div class="plot-container">
+            <iframe src="assets/step_2_graph_2.html"></iframe>
+            <p
+              class="plot-description"
+              style="margin-top: 10px; font-size: 0.95em; color: #a0a0a0"
+            >
+              <strong>Figure 2: Distribution of Customers Affected.</strong>
+              Mirroring the duration data, this univariate distribution shows
+              that the typical power outage impacts a relatively small pocket of
+              the population. However, the presence of rare, multi-million
+              customer outage outliers highlights how vulnerable high-density
+              grid networks are to systemic, wide-area disruptions.
+            </p>
+          </div>
+
+          <h3>Bivariate Analysis: Regional Resilience Across Top States</h3>
+          <p>
+            To identify geographic associations within our dataset, we isolated
+            the top ten states by outage frequency and evaluated the conditional
+            distributions of their outage durations. Because extreme weather
+            anomalies create a massive spread between routine maintenance spikes
+            and catastrophic grid collapses, we visualized this relationship
+            using both linear and logarithmic scales.
+          </p>
+
+          <div class="plot-container">
+            <iframe src="assets/step_2_graph_3.html"></iframe>
+            <p
+              class="plot-description"
+              style="margin-top: 10px; font-size: 0.95em; color: #a0a0a0"
+            >
+              <strong
+                >Figure 3: Outage Duration Variance across Top 10 States (Linear
+                Scale).</strong
+              >
+              This bivariate box plot maps out the raw distribution of recovery
+              times across the most impacted states. The linear scale visually
+              isolates the staggering impact of catastrophic outliers—such as
+              extreme events stretching past 40,000 minutes in states like Texas
+              and New York—which completely dwarf routine grid operations.
+            </p>
+          </div>
+
+          <div class="plot-container">
+            <iframe src="assets/step_2_graph_4.html"></iframe>
+            <p
+              class="plot-description"
+              style="margin-top: 10px; font-size: 0.95em; color: #a0a0a0"
+            >
+              <strong
+                >Figure 4: Outage Duration Variance across Top 10 States (Log
+                Scale).</strong
+              >
+              By applying a logarithmic transform to the duration axis, we
+              eliminate the compression caused by extreme outliers to inspect
+              baseline grid performance. This view reveals that while median
+              restoration times remain relatively consistent across these top
+              states, certain regions exhibit a significantly wider
+              interquartile spread, signaling systemic variations in regional
+              infrastructure resilience.
+            </p>
+          </div>
+
+          <h3>Interesting Aggregates: State-Level Grid Performance</h3>
+          <p>
+            To further unpack the variations observed in our box plots, we
+            grouped the dataset by <code>State</code> to isolate the exact
+            boundaries of the interquartile range,specifically computing the
+            first quartile (Q1), the median, the third quartile (Q3), and the
+            maximum outage durations. This cross-tabulation allows us to
+            contrast the typical mid-range operational recovery window against
+            the absolute worst-case gridlock scenarios across different states.
+          </p>
+
+          <h4>Outage Duration Quartile Distributions by State</h4>
+          <div class="table-container" style="overflow-x: auto">
+            <table class="data-table aggregate-table">
+              <thead>
+                <tr>
+                  <th>U.S. State</th>
+                  <th>First Quartile - Q1 (Min)</th>
+                  <th>Median Duration (Min)</th>
+                  <th>Third Quartile - Q3 (Min)</th>
+                  <th>Maximum Duration (Min)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Michigan</strong></td>
+                  <td>2,411</td>
+                  <td>4,110</td>
+                  <td>5,752</td>
+                  <td>78,377</td>
+                </tr>
+                <tr>
+                  <td><strong>California</strong></td>
+                  <td>108</td>
+                  <td>294</td>
+                  <td>1,054</td>
+                  <td>49,427</td>
+                </tr>
+                <tr>
+                  <td><strong>Texas</strong></td>
+                  <td>255</td>
+                  <td>965</td>
+                  <td>2,220</td>
+                  <td>27,698</td>
+                </tr>
+                <tr>
+                  <td><strong>New York</strong></td>
+                  <td>258</td>
+                  <td>2,880</td>
+                  <td>8,221</td>
+                  <td>60,480</td>
+                </tr>
+                <tr>
+                  <td><strong>Washington</strong></td>
+                  <td>1</td>
+                  <td>314</td>
+                  <td>1,639</td>
+                  <td>22,769</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p
+            class="table-description"
+            style="margin-top: 15px; font-size: 0.95em; color: #a0a0a0"
+          >
+            <strong>Significance of the Quartile Aggregate Table:</strong>
+            Reviewing the spread between Q1, Q3, and the Maximum highlights a
+            fascinating divide in grid vulnerability. In
+            <strong>California</strong>, 75 percent of all major outages are
+            resolved within 1,054 minutes (the Q3 threshold), yet its absolute
+            maximum stretches to a massive 49,427 minutes. This massive gap
+            mathematically demonstrates that while California's grid handles
+            standard disruptions relatively quickly, it remains incredibly
+            vulnerable to hyper-severe, long-tail catastrophic events. On the
+            other hand, states like <strong>Michigan</strong> have an highly
+            elevated baseline where even their Q1 sits at a staggering 2,411
+            minutes, proving that prolonged, multi-day delays are heavily
+            embedded within their standard distribution of grid incidents.
+            Meanwhile, <strong>Washington</strong> presents a stark contrast
+            with a Q1 of just 1 minute, exposing a reporting structure that logs
+            near-instantaneous grid resets alongside major long-tail failures.
+          </p>
         </div>
-    </section>
 
-    <section id="step3" class="section-fade">
+        <iframe src="assets/step_2_table_1.html"></iframe>
+        <iframe src="assets/step_2_table_head.html"></iframe>
+      </section>
+
+      <section id="step3" class="section-fade">
         <h2>Step 3: Assessment of Missingness</h2>
         <div class="card">
-            <h3>NMAR, MAR, and MCAR</h3>
-            <p>We analyzed columns with significant missing values, specifically <code>Demand_Loss_MW</code> and <code>Customers_Affected</code>.</p>
-            <ul>
-                <li><strong>MAR Discovery:</strong> We found that <code>Demand_Loss_MW</code> missingness is significantly correlated with the <code>Year</code>. This implies that reporting standards for precise megawatt loss improved over time, suggesting the data is Missing at Random based on the date.</li>
-                <li><strong>MAR Discovery:</strong> <code>Customers_Affected</code> missingness was found to be dependent on the <code>State</code>, likely due to varying utility reporting requirements between different state legislatures.</li>
-            </ul>
+          <h3>NMAR, MAR, and MCAR</h3>
+          <p>
+            We analyzed columns with significant missing values, specifically
+            <code>Demand_Loss_MW</code> and <code>Customers_Affected</code>.
+          </p>
+          <ul>
+            <li>
+              <strong>MAR Discovery:</strong> We found that
+              <code>Demand_Loss_MW</code> missingness is significantly
+              correlated with the <code>Year</code>. This implies that reporting
+              standards for precise megawatt loss improved over time, suggesting
+              the data is Missing at Random based on the date.
+            </li>
+            <li>
+              <strong>MAR Discovery:</strong>
+              <code>Customers_Affected</code> missingness was found to be
+              dependent on the <code>State</code>, likely due to varying utility
+              reporting requirements between different state legislatures.
+            </li>
+          </ul>
 
-            <h3>Missingness Permutation Tests</h3>
-            <p>To validate our MAR assumptions, we performed permutation tests on the distributions of observed versus missing data across temporal and geographical variables.</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_3_graph_1.html"></iframe>
-            </div>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_3_graph_2.html"></iframe>
-            </div>
+          <h3>Missingness Permutation Tests</h3>
+          <p>
+            To validate our MAR assumptions, we performed permutation tests on
+            the distributions of observed versus missing data across temporal
+            and geographical variables.
+          </p>
 
-            <p>The geographical dependency of <code>Customers_Affected</code> is highlighted by the disparity in missingness reporting across different regions.</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_3_graph_3.html"></iframe>
-            </div>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_3_graph_4.html"></iframe>
-            </div>
+          <div class="plot-container">
+            <iframe src="assets/step_3_graph_1.html"></iframe>
+          </div>
+
+          <div class="plot-container">
+            <iframe src="assets/step_3_graph_2.html"></iframe>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <section id="step4" class="section-fade">
+      <section id="step4" class="section-fade">
         <h2>Step 4: Hypothesis Testing</h2>
         <div class="card">
-            <p>We conducted a Permutation Test to determine if geographical location (State) significantly influences outage duration.</p>
-            <p><strong>Null Hypothesis (H₀):</strong> Outage duration is independent of state. Differences are due to random noise.</p>
-            <p><strong>Alternative Hypothesis (H₁):</strong> Outage duration differs significantly across states.</p>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-value">0.015</span>
-                    <span class="stat-label">Empirical p-Value</span>
-                </div>
-            </div>
-            <p><strong>Conclusion:</strong> With a p-value of 0.015, we reject the null hypothesis at the 5% level. There is strong evidence that regional infrastructure and local climate conditions create state-specific "outage signatures."</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_4_graph_1.html"></iframe>
-            </div>
-        </div>
-    </section>
+          <p>
+            We conducted a Permutation Test to determine whether geographical
+            location (U.S. State) has a statistically significant effect on
+            outage duration.
+          </p>
+          <p>
+            <strong>Null Hypothesis (H₀):</strong> Outage duration is
+            independent of state. Any observed differences in average outage
+            duration across states are due to random chance.
+          </p>
+          <p>
+            <strong>Alternative Hypothesis (H₁):</strong> Outage duration
+            differs systematically across states; at least one state has a
+            meaningfully different mean outage duration.
+          </p>
 
-    <section id="step5" class="section-fade">
+          <h3>Test Statistic & Significance Level</h3>
+          <p>
+            Our <strong>test statistic</strong> is the
+            <em
+              >sum of absolute deviations of each state's mean outage duration
+              from the overall global mean</em
+            >. This is a natural choice for a multi-group comparison because it
+            captures the aggregate dispersion of group means without requiring
+            pairwise testing across all 49 states — it increases whenever any
+            state's mean drifts further from the center, making it sensitive to
+            the alternative hypothesis we care about.
+          </p>
+          <p>
+            We chose a <strong>significance level of α = 0.05</strong>, which is
+            the standard threshold in data science and gives us a 5%
+            false-positive rate — an appropriate balance between being too
+            permissive and too conservative for an exploratory analysis of this
+            kind.
+          </p>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value">84,990</span>
+              <span class="stat-label">Observed Test Statistic</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">0.015</span>
+              <span class="stat-label">Empirical p-Value</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">0.05</span>
+              <span class="stat-label">Significance Level (α)</span>
+            </div>
+          </div>
+
+          <p>
+            <strong>Conclusion:</strong> With a p-value of 0.015 — below our
+            threshold of 0.05 — we reject the null hypothesis. The data provides
+            statistically significant evidence that outage durations vary across
+            U.S. states. This suggests, but does not prove, that state-level
+            factors such as regional infrastructure age, local climate
+            conditions, and utility regulatory environments play a role in
+            determining how long outages last.
+          </p>
+
+          <div class="plot-container">
+            <iframe src="assets/step_4_graph_1.html"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section id="step5" class="section-fade">
         <h2>Step 5: Framing a Prediction Problem</h2>
         <div class="card">
-            <p>We aim to solve a <strong>Regression Problem</strong>: Predicting <code>Outage_Duration_Minutes</code>.</p>
-            <p><strong>Why?</strong> Operational readiness. If a utility knows a storm will cause a 10-hour outage versus a 2-hour one, they can prioritize repair crews and alert medical facilities more effectively.</p>
-            <p><strong>Metrics:</strong>
-                <ul>
-                    <li><strong>MAE (Mean Absolute Error):</strong> Chosen for its direct interpretability in minutes of error.</li>
-                    <li><strong>RMSE (Root Mean Squared Error):</strong> Chosen to penalize large, catastrophic misses.</li>
-                </ul>
-            </p>
-        </div>
-    </section>
+          <p>
+            We frame this as a <strong>Regression Problem</strong>: predicting
+            <code>Outage_Duration_Minutes</code> — the total number of minutes
+            an outage lasts from its reported start until full power
+            restoration.
+          </p>
 
-    <section id="step6" class="section-fade">
+          <h3>Why This Response Variable?</h3>
+          <p>
+            Outage duration is the most operationally actionable metric for
+            utilities and emergency responders. If a utility company can
+            estimate at an outage's onset whether it will last 2 hours or 20
+            hours, they can make better decisions about deploying repair crews,
+            alerting hospitals, and communicating with the public. This is a
+            more useful prediction target than, for example, the number of
+            customers affected, which is largely a function of where an outage
+            happens rather than how hard it is to fix.
+          </p>
+
+          <h3>What Information Is Known at the Time of Prediction?</h3>
+          <p>
+            A key constraint is that our model must only use information that
+            would be
+            <em>observable at the moment an outage is first reported</em> —
+            before we know how long it will last. This means we can use:
+          </p>
+          <ul>
+            <li>
+              <strong>When</strong> the outage starts (Year, Month — used for
+              seasonality)
+            </li>
+            <li>
+              <strong>Where</strong> it occurs (State, Climate Region, NERC
+              Region)
+            </li>
+            <li>
+              <strong>Climate context</strong> at the time of the event (Anomaly
+              Level, Climate Category)
+            </li>
+            <li>
+              <strong>Infrastructure profile</strong> of the region (Total
+              Sales, Rural Population Density, Residential Sales)
+            </li>
+            <li>
+              <strong>The reported cause</strong> (Cause Category Detail — this
+              is typically logged when the outage is first dispatched)
+            </li>
+          </ul>
+          <p>
+            We explicitly <strong>excluded</strong> features like
+            <code>Demand_Loss_MW</code> and the final
+            <code>Customers_Affected</code> count from model training features
+            where they would constitute leakage, since accurate figures for
+            those are often only known after restoration is complete.
+          </p>
+
+          <h3>Evaluation Metrics</h3>
+          <ul>
+            <li>
+              <strong>MAE (Mean Absolute Error):</strong> Our primary metric. It
+              gives us the average error in interpretable minutes (e.g., "off by
+              2,100 minutes on average"). We prefer MAE over R² because R²
+              measures proportion of variance explained and can be misleadingly
+              low when the target has extreme outliers — which ours does. An R²
+              of 0.3 on a heavily right-skewed distribution may still represent
+              a highly useful model in practice.
+            </li>
+            <li>
+              <strong>RMSE (Root Mean Squared Error):</strong> Used as a
+              secondary metric because it penalizes large individual errors more
+              heavily than MAE. Since catastrophically wrong predictions (e.g.,
+              predicting 500 minutes when the actual is 40,000) are especially
+              costly in an emergency-response context, RMSE helps us track those
+              tail failures.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="step6" class="section-fade">
         <h2>Step 6: Baseline Model</h2>
         <div class="card">
-            <p>Our baseline used a simple <strong>Linear Regression</strong> pipeline. We selected four basic features present at the moment an outage is detected:</p>
-            <ul>
-                <li>Quantitative: <code>Anomaly_Level</code>, <code>Total_Sales</code></li>
-                <li>Categorical: <code>Climate_Region</code>, <code>Climate_Category</code></li>
-            </ul>
-            <p><strong>Baseline Performance:</strong> The model struggled with complex interactions, yielding a Test MAE of approximately <strong>3,081 minutes</strong>.</p>
+          <p>
+            Our baseline model utilizes a
+            <strong>Linear Regression</strong> pipeline to establish a
+            performance floor. We selected four fundamental features that are
+            typically known at the immediate onset of an outage:
+          </p>
+          <ul>
+            <li>
+              <strong>Quantitative (2 features):</strong>
+              <code>Anomaly_Level</code>, <code>Total_Sales</code> — passed
+              through as-is with no transformation.
+            </li>
+            <li>
+              <strong>Nominal (2 features):</strong>
+              <code>Climate_Region</code>, <code>Climate_Category</code> —
+              encoded using <code>OneHotEncoder(handle_unknown="ignore")</code>,
+              which converts each unique category into its own binary column.
+              This prevents the model from assuming any ordinal relationship
+              between climate labels.
+            </li>
+            <li>
+              <strong>Ordinal features:</strong> None. None of the selected
+              features represent a naturally ordered ranking, so no ordinal
+              encoding was needed.
+            </li>
+          </ul>
+          <p>
+            All preprocessing and model steps were implemented inside a single
+            <code>sklearn Pipeline</code> using a
+            <code>ColumnTransformer</code> to apply the appropriate encoding to
+            each feature type.
+          </p>
+          <p>
+            <strong>Reasoning:</strong> These features were chosen because they
+            provide a high-level snapshot of the environment (climate) and the
+            size of the grid (total sales) without requiring complex post-event
+            data. From a data-generating perspective, we expect larger grids and
+            extreme climate regions to have longer "queue" times for repair
+            crews, justifying their inclusion in a basic predictive model.
+          </p>
+          <p>
+            <strong>Performance (Train vs. Test):</strong> The model achieved a
+            Train RMSE of <strong>5,254 minutes</strong> and a Test RMSE of
+            <strong>7,735 minutes</strong>, with a Test MAE of approximately
+            <strong>3,081 minutes</strong>. The gap between train and test RMSE
+            indicates the model is not overfitting but is underfitting — it
+            lacks the complexity to capture the non-linear patterns in the data.
+            We do not consider this a "good" model; it serves purely as a
+            baseline to measure improvement against.
+          </p>
         </div>
-    </section>
+      </section>
 
-    <section id="step7" class="section-fade">
+      <section id="step7" class="section-fade">
         <h2>Step 7: Final Model</h2>
         <div class="card">
-            <h3>Advancing to Random Forest</h3>
-            <p>To capture the non-linear realities of power grids, we implemented a <strong>Random Forest Regressor</strong> with customized feature engineering:</p>
-            <ul>
-                <li><strong>Season Encoding:</strong> Binarized months to group extreme weather seasons (Summer/Winter vs. Shoulder seasons).</li>
-                <li><strong>Skewness Correction:</strong> Applied <code>QuantileTransformer</code> (Normal distribution output) to population density and sales figures.</li>
-                <li><strong>Hyperparameter Tuning:</strong> Used 3-fold <code>GridSearchCV</code> to optimize tree depth and split criteria.</li>
-            </ul>
-            <p><strong>Performance Gain:</strong> The final model reached a Test MAE of <strong>2,137 minutes</strong>—a ~30% improvement in accuracy over the baseline.</p>
-            
-            <h3>Residual Analysis</h3>
-            <p>The log-log residual plot reveals that while the model handles medium-scale outages well, the extreme 10,000+ minute outliers remain difficult to point-predict, reflecting the chaotic nature of massive grid failures.</p>
-            <div class="plot-container">
-                <iframe src="assets/step_7_graph_1.html"></iframe>
-            </div>
-        </div>
-    </section>
+          <h3>Advancing to Random Forest</h3>
+          <p>
+            While the baseline linear model provided a starting point, it failed
+            to account for the complex, non-linear interactions inherent in
+            power grid data. To address this, we transitioned to a
+            <strong>Random Forest Regressor</strong>. This algorithm is
+            particularly well-suited for this task because it handles both
+            categorical and numerical data effectively and can capture
+            high-order interactions between features without requiring manual
+            interaction terms.
+          </p>
 
-    <section id="step8" class="section-fade">
+          <h3>Feature Engineering & Selection</h3>
+          <p>
+            Beyond the baseline features, we incorporated additional variables
+            and transformations chosen based on their relevance to the
+            <strong>data generating process</strong>:
+          </p>
+          <ul>
+            <li>
+              <strong>Cause Category Detail:</strong> Categorizing the specific
+              reason for an outage (vandalism vs. thunderstorm) is critical
+              because the repair logistics vary wildly between human-caused and
+              nature-caused events.
+            </li>
+            <li>
+              <strong>Season Tracking (Month Binarization):</strong> We
+              binarized the <code>Month</code> variable to isolate extreme
+              weather periods (Summer and Winter). This recognizes that outages
+              during peak seasons are often systemic (driven by load or broad
+              storms) whereas shoulder-season outages are often isolated or
+              maintenance-related.
+            </li>
+            <li>
+              <strong>Anomaly Binarization:</strong> By taking the absolute
+              value of the <code>Anomaly_Level</code> and binarizing it, we
+              created a feature that flags "Extreme Climate States," recognizing
+              that both severe heat (positive anomaly) and severe cold (negative
+              anomaly) place similar structural stress on the grid.
+            </li>
+            <li>
+              <strong>Skewness Correction (Quantile Transformer):</strong>
+              Features like <code>Rural_Population_Density</code> and
+              <code>Total_Sales</code> were extremely right-skewed. We applied a
+              <code>QuantileTransformer</code> to map these to a normal
+              distribution. In the real world, the impact of a population
+              density increase on repair speed isn't linear; normalising these
+              features allows the model to treat variance in lower and higher
+              ranges with equal priority.
+            </li>
+          </ul>
+
+          <h3>Hyperparameter Tuning</h3>
+          <p>
+            We used <strong>3-fold Cross-Validation</strong> via
+            <code>GridSearchCV</code> to optimize our model. Our search explored
+            variations in tree depth, forest size, and splitting criteria. The
+            optimal configuration discovered was:
+          </p>
+          <ul>
+            <li><code>n_estimators</code>: 100</li>
+            <li><code>max_depth</code>: 10</li>
+            <li><code>min_samples_split</code>: 2</li>
+          </ul>
+
+          <p>
+            <strong>Performance Improvement:</strong> The Final Model achieved a
+            Test MAE of approximately <strong>2,137 minutes</strong>. Compared
+            to the Baseline Model's MAE of <strong>3,081 minutes</strong>, this
+            represents a <strong>~30% reduction in error</strong>. This
+            improvement confirms that the inclusion of non-linear tree-based
+            logic and transformed population metrics significantly enhanced the
+            model's ability to navigate the complex "outage signatures" present
+            in different climate regions.
+          </p>
+
+          <h3>Residual Analysis</h3>
+          <p>
+            The log-log residual plot below demonstrates our model's performance
+            across different scales. While we have successfully tightened the
+            predictions for standard outages, the extremely long-tail events
+            (10,000+ minutes) remain difficult to predict with high precision,
+            representing the chaotic variability of massive infrastructure
+            failures.
+          </p>
+          <div class="plot-container">
+            <iframe src="assets/step_7_graph_1.html"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section id="step8" class="section-fade">
         <h2>Step 8: Fairness Analysis</h2>
         <div class="card">
-            <p>Does the model perform worse during extreme climate events? We compared MAE for outages occurring during "Severe Weather" (Anomaly > 0.5) vs. "Normal Weather".</p>
-            <ul>
-                <li><strong>Group X:</strong> Severe Weather Anomaly</li>
-                <li><strong>Group Y:</strong> Under-threshold Anomaly</li>
-                <li><strong>Null Hypothesis:</strong> The model is fair; MAE is the same across both groups.</li>
-            </ul>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-value">0.365</span>
-                    <span class="stat-label">Fairness p-Value</span>
-                </div>
+          <p>
+            Does our model perform worse for outages that occur during extreme
+            climate conditions? We split the test set into two groups based on
+            the absolute value of the <code>Anomaly_Level</code>:
+          </p>
+          <ul>
+            <li>
+              <strong>Group X (Extreme Climate):</strong> Outages where
+              <code>|Anomaly_Level| > 0.5</code> — i.e., outages occurring
+              during a significant El Niño or La Niña period.
+            </li>
+            <li>
+              <strong>Group Y (Near-Normal Climate):</strong> Outages where
+              <code>|Anomaly_Level| ≤ 0.5</code> — i.e., outages during
+              climatically stable periods.
+            </li>
+          </ul>
+
+          <h3>Hypotheses</h3>
+          <p>
+            <strong>Null Hypothesis (H₀):</strong> Our model is fair. Its MAE
+            for outages in extreme climate conditions and for outages in
+            near-normal conditions are roughly the same, and any observed
+            difference is due to random chance.
+          </p>
+          <p>
+            <strong>Alternative Hypothesis (H₁):</strong> Our model is unfair.
+            Its MAE for outages in extreme climate conditions is higher than its
+            MAE for outages in near-normal conditions.
+          </p>
+
+          <h3>Test Statistic & Significance Level</h3>
+          <p>
+            Our <strong>test statistic</strong> is the
+            <em>difference in MAE</em> between Group X and Group Y (MAE<sub
+              >Extreme</sub
+            >
+            − MAE<sub>Normal</sub>). A positive value means the model is less
+            accurate during extreme climate events. We used a
+            <strong>significance level of α = 0.05</strong> and ran a one-sided
+            permutation test by repeatedly shuffling the group labels and
+            recomputing the difference, generating a null distribution of what
+            the MAE gap would look like by chance alone.
+          </p>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value">194.9 min</span>
+              <span class="stat-label">Observed MAE Difference</span>
             </div>
-            <p><strong>Conclusion:</strong> We fail to reject the null hypothesis. The model appears fair and maintains consistent accuracy regardless of the severity of the climate anomaly.</p>
-            
-            <div class="plot-container">
-                <iframe src="assets/step_8_graph_1.html"></iframe>
+            <div class="stat-item">
+              <span class="stat-value">0.365</span>
+              <span class="stat-label">p-Value</span>
             </div>
+            <div class="stat-item">
+              <span class="stat-value">0.05</span>
+              <span class="stat-label">Significance Level (α)</span>
+            </div>
+          </div>
+
+          <p>
+            <strong>Conclusion:</strong> With a p-value of 0.365 — well above
+            our threshold of 0.05 — we
+            <strong>fail to reject the null hypothesis</strong>. The observed
+            MAE difference of ~195 minutes between the two groups is well within
+            the range that could arise from random chance alone. This suggests
+            our model does not systematically underperform for outages occurring
+            during extreme climate anomalies, and appears to treat both groups
+            with roughly equivalent accuracy.
+          </p>
+
+          <div class="plot-container">
+            <iframe src="assets/step_8_graph_1.html"></iframe>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <footer>
+      <footer>
         <p>DSC 80 | Final Data Science Project | 2026</p>
-    </footer>
-</div>
-
-</body>
+      </footer>
+    </div>
+  </body>
 </html>
